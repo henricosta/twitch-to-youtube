@@ -19,6 +19,20 @@ type Clip struct {
 	Title string `json:"title"`
 }
 
+type ClipVideo struct {
+	ID                  string `json:"id"`
+	PlaybackAccessToken struct {
+		Signature string `json:"signature"`
+		Value     string `json:"value"`
+		Typename  string `json:"__typename"`
+	} `json:"playbackAccessToken"`
+	VideoQualities []struct {
+		FrameRate float64 `json:"frameRate"`
+		Quality   string  `json:"quality"`
+		SourceURL string  `json:"sourceURL"`
+	} `json:"videoQualities"`
+}
+
 func parseClipSlug(clipUrl string) (string, error) {
 	u, err := url.Parse(clipUrl)
 
@@ -80,3 +94,37 @@ func getClip(client *Client, slug string) (Clip, error) {
 
 	return r.Data.Clip, nil
 }
+
+func getClipAccessToken(slug string, v interface{}) error {
+	query := `{"operationName":"VideoAccessToken_Clip","variables":{"slug":"%s"},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11"}}}`
+	body := strings.NewReader(fmt.Sprintf(query, slug))
+	req, err := http.NewRequest(http.MethodPost, "https://gql.twitch.tv/gql", body)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Client-ID", "kimne78kx3ncx6brgo4mv6wki5h1ko")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	responseBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = json.Unmarshal(responseBody, &v)
+
+	return nil
+}
+
+// func getClipAuthenticatedUrl(slug string) string {
+
+// }
+
+// func getClipSourceUrl(clip) string {
+
+// }
