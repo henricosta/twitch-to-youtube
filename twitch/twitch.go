@@ -99,36 +99,39 @@ func getClip(client *Client, slug string) (Clip, error) {
 	return r.Data.Clip, nil
 }
 
-func getClipAccessToken(slug string, v interface{}) error {
+func getClipAccessToken(slug string) ClipVideo {
 	query := `{"operationName":"VideoAccessToken_Clip","variables":{"slug":"%s"},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11"}}}`
 	body := strings.NewReader(fmt.Sprintf(query, slug))
+
 	req, err := http.NewRequest(http.MethodPost, "https://gql.twitch.tv/gql", body)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
+	defer req.Body.Close()
 	req.Header.Set("Client-ID", "kimne78kx3ncx6brgo4mv6wki5h1ko")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
 
-	defer res.Body.Close()
+	type Response struct {
+		Data struct {
+			ClipVideo `json:"clip"`
+		} `json:"data"`
+	}
 
 	responseBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = json.Unmarshal(responseBody, &v)
+	var response Response
+	err = json.Unmarshal(responseBody, &response)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	return nil
+	return response.Data.ClipVideo
 }
 
-// func getClipAuthenticatedUrl(slug string) string {
-
-// }
-
-// func getClipSourceUrl(clip) string {
-
-// }
