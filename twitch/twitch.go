@@ -19,18 +19,22 @@ type Clip struct {
 	Title string `json:"title"`
 }
 
-type ClipVideo struct {
-	ID                  string `json:"id"`
-	PlaybackAccessToken struct {
+type PlaybackAcessToken struct {
 		Signature string `json:"signature"`
 		Value     string `json:"value"`
 		Typename  string `json:"__typename"`
-	} `json:"playbackAccessToken"`
-	VideoQualities []struct {
+}
+
+type VideoQuality struct {
 		FrameRate float64 `json:"frameRate"`
 		Quality   string  `json:"quality"`
 		SourceURL string  `json:"sourceURL"`
-	} `json:"videoQualities"`
+}
+
+type ClipVideo struct {
+	ID                  string             `json:"id"`
+	PlaybackAccessToken PlaybackAcessToken `json:"playbackAccessToken"`
+	VideoQualities      []VideoQuality     `json:"videoQualities"`
 }
 
 func parseClipSlug(clipUrl string) (string, error) {
