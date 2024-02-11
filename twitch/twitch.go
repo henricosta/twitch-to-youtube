@@ -20,15 +20,15 @@ type Clip struct {
 }
 
 type PlaybackAcessToken struct {
-		Signature string `json:"signature"`
-		Value     string `json:"value"`
-		Typename  string `json:"__typename"`
+	Signature string `json:"signature"`
+	Value     string `json:"value"`
+	Typename  string `json:"__typename"`
 }
 
 type VideoQuality struct {
-		FrameRate float64 `json:"frameRate"`
-		Quality   string  `json:"quality"`
-		SourceURL string  `json:"sourceURL"`
+	FrameRate float64 `json:"frameRate"`
+	Quality   string  `json:"quality"`
+	SourceURL string  `json:"sourceURL"`
 }
 
 type ClipVideo struct {
@@ -135,3 +135,12 @@ func getClipAccessToken(slug string) ClipVideo {
 	return response.Data.ClipVideo
 }
 
+func getClipAuthenticatedUrl(slug string) string {
+	clip := getClipAccessToken(slug)
+
+	params := url.Values{}
+	params.Add("sig", clip.PlaybackAccessToken.Signature)
+	params.Add("token", clip.PlaybackAccessToken.Value)
+
+	return fmt.Sprintf("%s?%s", clip.VideoQualities[0].SourceURL, params.Encode())
+}
