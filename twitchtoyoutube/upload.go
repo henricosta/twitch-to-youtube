@@ -1,4 +1,4 @@
-package main
+package twitchtoyoutube
 
 import (
 	"log"

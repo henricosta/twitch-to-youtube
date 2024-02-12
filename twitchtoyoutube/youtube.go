@@ -1,6 +1,6 @@
 // Sample Go code for user authorization
 
-package main
+package twitchtoyoutube
 
 import (
 	"encoding/json"
