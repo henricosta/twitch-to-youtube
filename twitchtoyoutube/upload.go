@@ -12,10 +12,10 @@ func UploadVideo(filepath string, video *youtube.Video) (videoId string) {
 
 	call := service.Videos.Insert([]string{"snippet", "status"}, video)
 
-	file, err := os.Open("test.mp4")
+	file, err := os.Open(filepath)
 	defer file.Close()
 	if err != nil {
-		log.Fatalf("Error opening %v: %v", "test.mp4", err)
+		log.Fatalf("Error opening %v: %v", filepath, err)
 	}
 
 	response, err := call.Media(file).Do()
