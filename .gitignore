@@ -23,6 +23,7 @@ Godeps/
 
 # Exclude JSON files from Google API
 client_secret.json
+youtube.json
 
 # Exclude video files
 *.mp4
