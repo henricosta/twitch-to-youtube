@@ -91,16 +91,7 @@ func saveToken(file string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func handleError(err error, message string) {
-	if message == "" {
-		message = "Error making API call"
-	}
-	if err != nil {
-		log.Fatalf(message+": %v", err.Error())
-	}
-}
-
-func main() {
+func getService() *youtube.Service {
 	ctx := context.Background()
 
 	b, err := os.ReadFile("client_secret.json")
@@ -109,7 +100,7 @@ func main() {
 	}
 
 	// If modifying these scopes, delete your previously saved credentials
-	// at ~/.credentials/youtube-go-quickstart.json
+	// at .credentials/youtube.json
 	config, err := google.ConfigFromJSON(b, youtube.YoutubeUploadScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
@@ -117,28 +108,9 @@ func main() {
 	client := getClient(ctx, config)
 	service, err := youtube.NewService(ctx, option.WithHTTPClient(client))
 
-	handleError(err, "Error creating YouTube client")
-
-	// Upload video to youtube
-
-	upload := &youtube.Video{
-		Snippet: &youtube.VideoSnippet{
-			Title:       "upload test 3",
-			Description: "My description",
-			CategoryId:  "22",
-		},
-		Status: &youtube.VideoStatus{PrivacyStatus: "private"},
-	}
-
-	call := service.Videos.Insert([]string{"snippet", "status"}, upload)
-
-	file, err := os.Open("test.mp4")
-	defer file.Close()
 	if err != nil {
-		log.Fatalf("Error opening %v: %v", "test.mp4", err)
+		log.Fatalf("Error making API call: %v", err.Error())
 	}
 
-	response, err := call.Media(file).Do()
-	handleError(err, "")
-	fmt.Printf("Upload successful! Video ID: %v\n", response.Id)
+	return service
 }
