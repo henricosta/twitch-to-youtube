@@ -5,9 +5,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
-func Download(url string, filepath string) error {
+func Download(url string) error {
 	slug, err := parseClipSlug(url)
 	if err != nil {
 		return err
@@ -27,8 +28,17 @@ func Download(url string, filepath string) error {
 
 	videoUrl := getClipAuthenticatedUrl(slug)
 
-	out, err := os.Create(filepath)
+	dir := "./videos"
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return err
+		}
+	}
+
+	out, err := os.Create(filepath.Join(dir, clip.Title+".mp4"))
 	if err != nil {
+		fmt.Println("error while creating directory")
 		return err
 	}
 	defer out.Close()
