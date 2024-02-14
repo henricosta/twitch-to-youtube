@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	twyt "github.com/henricosta/twitch-to-youtube/twitchtoyoutube"
@@ -16,7 +17,10 @@ func main() {
 
 	url := os.Args[1]
 
-	twyt.Download(url)
+	filepath, err := twyt.Download(url)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	upload := &youtube.Video{
 		Snippet: &youtube.VideoSnippet{
@@ -25,7 +29,7 @@ func main() {
 		},
 	}
 
-	twyt.UploadVideo("./clip.mp4", upload)
+	twyt.UploadVideo(filepath, upload)
 
 	fmt.Println("Video uploaded successfully!")
 }
