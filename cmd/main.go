@@ -16,7 +16,7 @@ func main() {
 
 	url := os.Args[1]
 
-	twyt.Download(url, "./clip.mp4")
+	twyt.Download(url)
 
 	upload := &youtube.Video{
 		Snippet: &youtube.VideoSnippet{
