@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 )
 
-func Download(url string) (string, error) {
+func Download(url string) (string, string, error) {
 	slug, err := parseClipSlug(url)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	client := &Client{
@@ -21,7 +21,7 @@ func Download(url string) (string, error) {
 
 	clip, err := getClip(client, slug)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	fmt.Printf("Found clip: %v\n", clip.Title)
@@ -32,7 +32,7 @@ func Download(url string) (string, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 	}
 
@@ -40,18 +40,18 @@ func Download(url string) (string, error) {
 	out, err := os.Create(filepath)
 	if err != nil {
 		fmt.Println("error while creating directory")
-		return "", err
+		return "", "", err
 	}
 	defer out.Close()
 
 	// Get the data
 	resp, err := http.Get(videoUrl)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	defer resp.Body.Close()
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
-	return filepath, err
+	return filepath, clip.Title, err
 }
