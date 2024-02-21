@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,23 +10,36 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+var url, title, privacy string
+
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Please provide a url as an argument.")
-		return
+	flag.StringVar(&url, "url", "", "URL of the clip")
+	flag.StringVar(&title, "title", "", "Title of the video")
+	flag.StringVar(&privacy, "privacy", "private", "Privacy status of the video")
+
+	flag.Parse()
+
+	if url == "" {
+		fmt.Println("URL is required")
+		os.Exit(1)
 	}
 
-	url := os.Args[1]
-
-	filepath, err := twyt.Download(url)
+	filepath, clipTitle, err := twyt.Download(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	if title == "" {
+		title = clipTitle
+	}
+
 	upload := &youtube.Video{
 		Snippet: &youtube.VideoSnippet{
-			Title:       "Test Upload",
+			Title:       title,
 			Description: "Test Description",
+		},
+		Status: &youtube.VideoStatus{
+			PrivacyStatus: privacy,
 		},
 	}
 
