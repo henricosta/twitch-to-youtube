@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func Download(url string) (string, string, error) {
+func Download(url string, dir string) (string, string, error) {
 	slug, err := parseClipSlug(url)
 	if err != nil {
 		return "", "", err
@@ -28,7 +28,6 @@ func Download(url string) (string, string, error) {
 
 	videoUrl := getClipAuthenticatedUrl(slug)
 
-	dir := "./videos"
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {

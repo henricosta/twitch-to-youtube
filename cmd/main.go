@@ -10,12 +10,13 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-var url, title, privacy string
+var url, title, privacy, dir string
 
 func main() {
 	flag.StringVar(&url, "url", "", "URL of the clip")
 	flag.StringVar(&title, "title", "", "Title of the video")
 	flag.StringVar(&privacy, "privacy", "private", "Privacy status of the video")
+	flag.StringVar(&dir, "dir", "./videos", "Folder where downloaded clips will be saved")
 
 	flag.Parse()
 
@@ -24,7 +25,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	filepath, clipTitle, err := twyt.Download(url)
+	filepath, clipTitle, err := twyt.Download(url, dir)
 	if err != nil {
 		log.Fatal(err)
 	}
