@@ -43,6 +43,7 @@ func Download(url string, dir string) (string, string, error) {
 	}
 	defer out.Close()
 
+	fmt.Printf("Downloading clip with title \"%s\"\n", clip.Title)
 	// Get the data
 	resp, err := http.Get(videoUrl)
 	if err != nil {
@@ -52,5 +53,6 @@ func Download(url string, dir string) (string, string, error) {
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
+	fmt.Println("Download complete!")
 	return filepath, clip.Title, err
 }
